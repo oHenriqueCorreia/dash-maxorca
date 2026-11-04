@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dashboard executiva de tráfego pago e estratégia comercial da MaxOrça." />
+  <meta name="theme-color" content="#07111f" />
+  <title>MaxOrça • Performance & Growth</title>
+
+  <!-- Tailwind via CDN, conforme solicitado. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#07111f',
+            panel: '#0d1a2b',
+            line: '#1e3045',
+            cyan: '#37d3ff',
+            lime: '#9afc7c',
+            coral: '#ff7d6b'
+          },
+          fontFamily: {
+            sans: ['Manrope', 'Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body class="min-h-screen bg-ink text-slate-100 antialiased selection:bg-cyan/30">
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <header class="sticky top-0 z-50 border-b border-white/5 bg-ink/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <div class="flex min-w-0 items-center gap-3">
+        <div class="brand-mark" aria-hidden="true">M</div>
+        <div class="min-w-0">
+          <p class="truncate text-sm font-extrabold tracking-tight text-white sm:text-base">MaxOrça <span class="text-cyan">/</span> Growth OS</p>
+          <p class="truncate text-[10px] uppercase tracking-[0.16em] text-slate-500">Performance & estratégia comercial</p>
+        </div>
+      </div>
+
+      <div class="hidden items-center gap-3 md:flex">
+        <div id="data-status" class="status-pill" title="Última data presente no arquivo">
+          <span class="status-dot"></span>
+          <span>Dados até 04 nov 2026</span>
+        </div>
+        <div class="h-8 w-px bg-white/10"></div>
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <p class="text-xs font-bold text-white">Conta MaxOrça</p>
+            <p class="text-[10px] text-slate-500">Meta Ads • Brasil</p>
+          </div>
+          <div class="avatar">MO</div>
+        </div>
+      </div>
+
+      <button id="mobile-menu-button" class="icon-button md:hidden" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <nav id="mobile-menu" class="hidden border-t border-white/5 bg-ink px-4 py-3 md:hidden">
+      <div class="flex items-center justify-between">
+        <div id="mobile-data-status" class="status-pill"><span class="status-dot"></span><span>Dados até 04 nov 2026</span></div>
+        <div class="avatar">MO</div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="relative z-10 mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8 lg:py-9">
+    <!-- Hero e controle de período -->
+    <section class="reveal mb-8 grid gap-5 xl:grid-cols-[1fr_auto] xl:items-end">
+      <div>
+        <div class="mb-3 flex flex-wrap items-center gap-2">
+          <span class="eyebrow">Executive overview</span>
+          <span id="source-badge" class="source-badge">Fonte agregada • Meta Ads</span>
+        </div>
+        <h1 class="max-w-4xl text-3xl font-extrabold leading-[1.05] tracking-[-0.045em] text-white sm:text-4xl lg:text-5xl">
+          Performance que vira<br class="hidden sm:block" /> <span class="gradient-text">próxima decisão.</span>
+        </h1>
+        <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+          Leitura executiva de mídia, criativos e públicos — com fatos do período e cenários estratégicos claramente separados.
+        </p>
+      </div>
+
+      <div class="period-control" aria-label="Filtro de período">
+        <div class="period-tabs" role="group" aria-label="Períodos rápidos">
+          <button class="period-btn" data-period="7">7 dias</button>
+          <button class="period-btn" data-period="30">30 dias</button>
+          <button class="period-btn" data-period="month">Mês atual</button>
+          <button class="period-btn active" data-period="all">Período total</button>
+          <button class="period-btn" data-period="custom">Personalizado</button>
+        </div>
+        <div id="custom-period" class="hidden grid grid-cols-[1fr_1fr_auto] gap-2 pt-3">
+          <label class="date-field"><span>De</span><input id="date-start" type="date" min="2026-08-01" max="2026-11-04" value="2026-10-01" /></label>
+          <label class="date-field"><span>Até</span><input id="date-end" type="date" min="2026-08-01" max="2026-11-04" value="2026-11-04" /></label>
+          <button id="apply-custom" class="apply-button">Aplicar</button>
+        </div>
+        <p id="period-caption" class="mt-2 text-right text-[10px] text-slate-500">01 ago — 04 nov 2026 • dados observados</p>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section aria-labelledby="kpi-title" class="mb-8">
+      <div class="section-heading reveal">
+        <div>
+          <p class="section-kicker">Pulso do negócio</p>
+          <h2 id="kpi-title">Visão geral</h2>
+        </div>
+        <button class="ghost-button" id="method-button" aria-expanded="false">Como calculamos <span>↗</span></button>
+      </div>
+
+      <div id="method-note" class="method-note hidden">
+        Investimento, cliques, impressões e resultados vêm do consolidado de campanhas. Conversões somam lead do pixel e contato no site; visitas ao perfil ficam separadas. Períodos menores usam ritmo proporcional porque a exportação não contém série diária. ROAS permanece indisponível sem receita.
+      </div>
+
+      <div class="kpi-grid mt-4">
+        <article class="kpi-card reveal" data-delay="0">
+          <div class="kpi-top"><span class="kpi-icon cyan-icon">R$</span><span class="neutral-change">— sem comparativo</span></div>
+          <p class="kpi-label">Investimento total</p>
+          <p class="kpi-value" data-kpi="spend" data-prefix="R$ ">0</p>
+          <div class="kpi-footer"><span>9 campanhas</span><span id="spend-share">100% Meta</span></div>
+        </article>
+        <article class="kpi-card reveal" data-delay="60">
+          <div class="kpi-top"><span class="kpi-icon violet-icon">↗</span><span class="neutral-change">— sem comparativo</span></div>
+          <p class="kpi-label">Cliques no link</p>
+          <p class="kpi-value" data-kpi="clicks">0</p>
+          <div class="kpi-footer"><span data-kpi="impressions">0</span><span>impressões</span></div>
+        </article>
+        <article class="kpi-card reveal" data-delay="120">
+          <div class="kpi-top"><span class="kpi-icon green-icon">%</span><span class="neutral-change">— sem comparativo</span></div>
+          <p class="kpi-label">CTR de link</p>
+          <p class="kpi-value" data-kpi="ctr" data-suffix="%">0</p>
+          <div class="kpi-footer"><span>Benchmark interno</span><span>2,69%</span></div>
+        </article>
+        <article class="kpi-card reveal" data-delay="180">
+          <div class="kpi-top"><span class="kpi-icon amber-icon">₵</span><span class="neutral-change">— sem comparativo</span></div>
+          <p class="kpi-label">CPC médio</p>
+          <p class="kpi-value" data-kpi="cpc" data-prefix="R$ ">0</p>
+          <div class="kpi-footer"><span>Por clique no link</span><span>eficiente</span></div>
+        </article>
+        <article class="kpi-card featured reveal" data-delay="240">
+          <div class="kpi-top"><span class="kpi-icon green-icon">✓</span><span class="neutral-change">— sem comparativo</span></div>
+          <p class="kpi-label">Conversões</p>
+          <p class="kpi-value" data-kpi="conversions">0</p>
+          <div class="kpi-footer"><span>Lead + contato</span><span>pixel/site</span></div>
+        </article>
+        <article class="kpi-card reveal" data-delay="300">
+          <div class="kpi-top"><span class="kpi-icon rose-icon">◎</span><span class="neutral-change">— sem comparativo</span></div>
+          <p class="kpi-label">CPA blended</p>
+          <p class="kpi-value" data-kpi="cpa" data-prefix="R$ ">0</p>
+          <div class="kpi-footer"><span>Apenas verba de leads</span><span>R$ 13,9 mil</span></div>
+        </article>
+        <article class="kpi-card reveal" data-delay="360">
+          <div class="kpi-top"><span class="kpi-icon muted-icon">×</span><span class="data-gap">dado ausente</span></div>
+          <p class="kpi-label">ROAS</p>
+          <p class="kpi-value text-slate-500">N/D</p>
+          <div class="kpi-footer"><span>Receita não exportada</span><span>—</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Performance -->
+    <section aria-labelledby="performance-title" class="mb-10">
+      <div class="section-heading reveal">
+        <div>
+          <p class="section-kicker">Diagnóstico de mídia</p>
+          <h2 id="performance-title">Desempenho</h2>
+        </div>
+        <div class="legend-note"><span class="info-dot">i</span> Curva diária estimada pelo ritmo agregado</div>
+      </div>
+
+      <div class="mt-4 grid gap-4 xl:grid-cols-[1.8fr_1fr]">
+        <article class="chart-card reveal">
+          <div class="chart-header">
+            <div>
+              <p class="chart-title">Ritmo de investimento & conversões</p>
+              <p class="chart-subtitle" id="chart-period-label">01 ago — 04 nov 2026</p>
+            </div>
+            <div class="chart-legend"><span><i class="bg-cyan"></i> Investimento</span><span><i class="bg-lime"></i> Conversões</span></div>
+          </div>
+          <div class="chart-wrap"><canvas id="trend-chart" aria-label="Gráfico de investimento e conversões" role="img"></canvas></div>
+        </article>
+
+        <article class="chart-card reveal" data-delay="80">
+          <div class="chart-header">
+            <div><p class="chart-title">Mix de canais</p><p class="chart-subtitle">Distribuição da verba observada</p></div>
+            <span class="source-badge">1 fonte</span>
+          </div>
+          <div class="donut-wrap">
+            <canvas id="channel-chart" aria-label="Distribuição da verba por canal" role="img"></canvas>
+            <div class="donut-center"><strong>100%</strong><span>Meta Ads</span></div>
+          </div>
+          <div class="channel-list">
+            <div><span><i class="bg-cyan"></i> Meta Ads</span><strong data-kpi="spend" data-prefix="R$ ">R$ 0</strong></div>
+            <div class="opacity-50"><span><i class="bg-slate-600"></i> Google Ads</span><strong>sem arquivo</strong></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="mt-4 grid gap-4 lg:grid-cols-3">
+        <article class="insight-card reveal">
+          <span class="insight-index">01</span><div><p>Melhor conjunto</p><h3>Remarketing — público salvo</h3><span>955 leads • CPA R$ 1,64</span></div>
+        </article>
+        <article class="insight-card reveal" data-delay="80">
+          <span class="insight-index">02</span><div><p>Oportunidade</p><h3>Escalar o criativo REVIEW</h3><span>515 leads • CPA R$ 1,50</span></div>
+        </article>
+        <article class="insight-card warning reveal" data-delay="160">
+          <span class="insight-index">03</span><div><p>Ponto de atenção</p><h3>Quiz consumiu verba sem resultado</h3><span>R$ 1.625,92 sem conversões atribuídas</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Criativos -->
+    <section aria-labelledby="creative-title" class="mb-10">
+      <div class="section-heading reveal">
+        <div><p class="section-kicker">Creative intelligence</p><h2 id="creative-title">Criativos que puxam o resultado</h2></div>
+        <div class="rank-switch" role="group" aria-label="Ordenar criativos">
+          <button class="rank-btn active" data-rank="leads">Por leads</button>
+          <button class="rank-btn" data-rank="cpa">Por CPA</button>
+        </div>
+      </div>
+
+      <div id="creative-grid" class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
+    </section>
+
+    <!-- Públicos -->
+    <section aria-labelledby="audience-title" class="mb-10">
+      <div class="section-heading reveal">
+        <div><p class="section-kicker">Audience lab</p><h2 id="audience-title">Mapa de públicos</h2></div>
+        <div class="audience-tabs" role="group" aria-label="Tipo de público">
+          <button class="audience-btn active" data-audience="all">Todos</button>
+          <button class="audience-btn" data-audience="engagement">Envolvimento</button>
+          <button class="audience-btn" data-audience="site">Site</button>
+        </div>
+      </div>
+      <p class="mt-2 max-w-3xl text-sm text-slate-500 reveal">Roadmap recomendado a partir dos sinais da campanha. Os status abaixo são de planejamento e não representam públicos lidos da conta.</p>
+
+      <div id="audience-grid" class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <article class="audience-card reveal" data-type="engagement">
+          <div class="audience-card-top"><span class="audience-icon">▶</span><span class="status-tag active-tag">Ativo</span></div>
+          <p class="audience-type">Vídeo view</p><h3>Visualizadores 50%</h3><p>Alta intenção recente para oferta direta e prova social.</p>
+          <div class="window-row"><span>Janela</span><div><b>7d</b><b>30d</b></div></div>
+          <div class="progress-track"><span style="width: 82%"></span></div>
+        </article>
+        <article class="audience-card reveal" data-type="engagement" data-delay="60">
+          <div class="audience-card-top"><span class="audience-icon">♥</span><span class="status-tag test-tag">Em teste</span></div>
+          <p class="audience-type">Social</p><h3>Engajados Instagram</h3><p>Recência de interação com Reels, perfil e anúncios.</p>
+          <div class="window-row"><span>Janela</span><div><b>7d</b><b>30d</b></div></div>
+          <div class="progress-track"><span style="width: 58%"></span></div>
+        </article>
+        <article class="audience-card reveal" data-type="site" data-delay="120">
+          <div class="audience-card-top"><span class="audience-icon">⌁</span><span class="status-tag scale-tag">Escala</span></div>
+          <p class="audience-type">Tráfego</p><h3>Visitantes da LP</h3><p>Visitou a página e não concluiu o cadastro no período.</p>
+          <div class="window-row"><span>Janela</span><div><b>7d</b><b>30d</b></div></div>
+          <div class="progress-track"><span style="width: 91%"></span></div>
+        </article>
+        <article class="audience-card reveal" data-type="site" data-delay="180">
+          <div class="audience-card-top"><span class="audience-icon">◎</span><span class="status-tag test-tag">Em teste</span></div>
+          <p class="audience-type">Lookalike</p><h3>Semelhante a leads</h3><p>Seed de conversores para expansão qualificada de 1–3%.</p>
+          <div class="window-row"><span>Origem</span><div><b>1%</b><b>3%</b></div></div>
+          <div class="progress-track"><span style="width: 64%"></span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Planejamento sazonal -->
+    <section aria-labelledby="strategy-title" class="strategy-section reveal">
+      <div class="strategy-hero">
+        <div>
+          <span class="eyebrow light">Sprint sazonal • nov–dez</span>
+          <h2 id="strategy-title">Black Friday &<br />Fim de Ano</h2>
+          <p>Plano tático para transformar o CPA histórico em crescimento controlado — sem misturar projeção com resultado realizado.</p>
+        </div>
+        <div class="strategy-orbit" aria-hidden="true"><span>BF</span></div>
+      </div>
+
+      <div class="strategy-content">
+        <div class="phase-grid">
+          <article class="phase-card">
+            <span class="phase-number">01</span><div><span class="phase-date">D−21 a D−8</span><h3>Pré-aquecimento</h3><p>Lead magnet, lista VIP e vídeos de demonstração para capturar intenção com baixo atrito.</p><ul><li>35% da verba</li><li>Meta: CPA ≤ R$ 2,00</li></ul></div>
+          </article>
+          <article class="phase-card primary-phase">
+            <span class="phase-number">02</span><div><span class="phase-date">D−7 ao Dia D</span><h3>Oferta principal</h3><p>Campanha de conversão com prova visual, urgência real e variações do criativo vencedor.</p><ul><li>45% da verba</li><li>Controle a cada 6 horas</li></ul></div>
+          </article>
+          <article class="phase-card">
+            <span class="phase-number">03</span><div><span class="phase-date">D+1 a D+7</span><h3>Recuperação</h3><p>Retargeting de visitantes, engajados e abandonos com objeções, bônus e última chamada.</p><ul><li>20% da verba</li><li>Excluir convertidos</li></ul></div>
+          </article>
+        </div>
+
+        <aside class="forecast-card">
+          <div class="forecast-heading"><div><span>Simulador de cenário</span><h3>Planeje com premissas</h3></div><span class="simulation-badge">SIMULAÇÃO</span></div>
+          <div class="forecast-fields">
+            <label><span>Orçamento planejado</span><div class="input-shell"><small>R$</small><input id="budget-input" type="number" min="1000" step="500" value="12000" /></div></label>
+            <label><span>CPA-alvo</span><div class="input-shell"><small>R$</small><input id="target-cpa-input" type="number" min="0.1" step="0.1" value="2" /></div></label>
+            <label><span>Conversão lead → venda</span><div class="input-shell"><input id="close-rate-input" type="number" min="0.1" max="100" step="0.1" value="3" /><small>%</small></div></label>
+            <label><span>Ticket médio</span><div class="input-shell"><small>R$</small><input id="ticket-input" type="number" min="1" step="10" value="297" /></div></label>
+          </div>
+          <div class="forecast-results">
+            <div><span>Leads projetados</span><strong id="forecast-leads">6.000</strong></div>
+            <div><span>Vendas projetadas</span><strong id="forecast-sales">180</strong></div>
+            <div class="revenue-result"><span>Faturamento potencial</span><strong id="forecast-revenue">R$ 53.460</strong></div>
+            <div><span>ROAS projetado</span><strong id="forecast-roas">4,46×</strong></div>
+          </div>
+          <p class="forecast-disclaimer">Projeção ilustrativa. Ajuste as premissas com dados reais de vendas antes de aprovar verba.</p>
+        </aside>
+      </div>
+    </section>
+
+    <footer class="flex flex-col gap-3 border-t border-white/5 py-7 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+      <p>MaxOrça Growth OS • Relatório de 01/08/2026 a 04/11/2026</p>
+      <p>Fonte: exportações Meta Ads • Atualizado localmente</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
