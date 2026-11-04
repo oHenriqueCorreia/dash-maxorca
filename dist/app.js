@@ -237,6 +237,15 @@ function configureInteractions() {
     button.classList.add('active');
     document.querySelectorAll('.audience-card').forEach(card => card.classList.toggle('is-hidden', button.dataset.audience !== 'all' && card.dataset.type !== button.dataset.audience));
   }));
+
+  document.querySelectorAll('.idea-filter-btn').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('.idea-filter-btn').forEach(item => item.classList.remove('active'));
+    button.classList.add('active');
+    document.querySelectorAll('.idea-card').forEach(card => {
+      const shouldHide = button.dataset.ideaFilter !== 'all' && card.dataset.ideaType !== button.dataset.ideaFilter;
+      card.classList.toggle('is-hidden', shouldHide);
+    });
+  }));
 }
 
 function configureForecast() {
