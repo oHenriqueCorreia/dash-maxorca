@@ -100,13 +100,62 @@
           <button class="period-btn active" data-period="all">Período total</button>
           <button class="period-btn" data-period="custom">Personalizado</button>
         </div>
-        <div id="custom-period" class="hidden grid grid-cols-[1fr_1fr_auto] gap-2 pt-3">
-          <label class="date-field"><span>De</span><input id="date-start" type="date" min="2026-08-01" max="2026-11-04" value="2026-10-01" /></label>
+        <p class="date-selector-label">Ou escolha exatamente o intervalo que deseja apresentar</p>
+        <div id="custom-period" class="date-selector-row grid grid-cols-[1fr_1fr_auto] gap-2 pt-2">
+          <label class="date-field"><span>De</span><input id="date-start" type="date" min="2026-08-01" max="2026-11-04" value="2026-08-01" /></label>
           <label class="date-field"><span>Até</span><input id="date-end" type="date" min="2026-08-01" max="2026-11-04" value="2026-11-04" /></label>
           <button id="apply-custom" class="apply-button">Aplicar</button>
         </div>
         <p id="period-caption" class="mt-2 text-right text-[10px] text-slate-500">01 ago — 04 nov 2026 • dados observados</p>
       </div>
+    </section>
+
+    <!-- Central de filtros: todos os resultados abaixo respondem a estes controles. -->
+    <section class="filter-center reveal" aria-labelledby="filter-title">
+      <div class="filter-center-head">
+        <div>
+          <span class="filter-kicker">CONTROLES DO RELATÓRIO</span>
+          <h2 id="filter-title">O que você quer analisar?</h2>
+          <p>Filtre as campanhas para apresentar apenas o recorte relevante ao cliente.</p>
+        </div>
+        <div class="filter-result-pill"><span class="status-dot"></span><strong id="filter-result-count">9 campanhas</strong><span>no recorte</span></div>
+      </div>
+      <div class="filter-fields">
+        <label class="filter-field filter-field-wide">
+          <span>Campanha</span>
+          <select id="campaign-filter" aria-label="Filtrar por campanha">
+            <option value="all">Todas as campanhas</option>
+          </select>
+          <small>Escolha uma campanha específica ou veja o consolidado.</small>
+        </label>
+        <label class="filter-field">
+          <span>Objetivo</span>
+          <select id="objective-filter" aria-label="Filtrar por objetivo">
+            <option value="all">Todos os objetivos</option>
+            <option value="lead">Geração de leads</option>
+            <option value="contact">Contato no site</option>
+            <option value="traffic">Tráfego / perfil</option>
+            <option value="unattributed">Sem atribuição</option>
+          </select>
+          <small>Separa aquisição, contato e tráfego.</small>
+        </label>
+        <label class="filter-field">
+          <span>Status</span>
+          <select id="status-filter" aria-label="Filtrar por status">
+            <option value="all">Ativas e inativas</option>
+            <option value="active">Ativas</option>
+            <option value="inactive">Inativas</option>
+          </select>
+          <small>Identifique o que ainda está em veiculação.</small>
+        </label>
+        <button id="clear-filters" class="clear-filter-button"><span>↺</span> Limpar filtros</button>
+      </div>
+    </section>
+
+    <section class="reading-guide reveal" aria-label="Como interpretar os dados">
+      <div><span class="reading-dot observed-dot"></span><p><strong>Observado</strong>Valor presente nos arquivos exportados.</p></div>
+      <div><span class="reading-dot estimated-dot"></span><p><strong>Estimado</strong>Rateio proporcional quando uma data menor é escolhida.</p></div>
+      <div><span class="reading-dot simulated-dot"></span><p><strong>Simulado</strong>Cenário ajustável; não representa receita realizada.</p></div>
     </section>
 
     <!-- KPIs -->
@@ -128,7 +177,7 @@
           <div class="kpi-top"><span class="kpi-icon cyan-icon">R$</span><span class="neutral-change">— sem comparativo</span></div>
           <p class="kpi-label">Investimento total</p>
           <p class="kpi-value" data-kpi="spend" data-prefix="R$ ">0</p>
-          <div class="kpi-footer"><span>9 campanhas</span><span id="spend-share">100% Meta</span></div>
+          <div class="kpi-footer"><span id="campaign-count">9 campanhas</span><span id="spend-share">100% Meta</span></div>
         </article>
         <article class="kpi-card reveal" data-delay="60">
           <div class="kpi-top"><span class="kpi-icon violet-icon">↗</span><span class="neutral-change">— sem comparativo</span></div>
@@ -158,7 +207,7 @@
           <div class="kpi-top"><span class="kpi-icon rose-icon">◎</span><span class="neutral-change">— sem comparativo</span></div>
           <p class="kpi-label">CPA blended</p>
           <p class="kpi-value" data-kpi="cpa" data-prefix="R$ ">0</p>
-          <div class="kpi-footer"><span>Apenas verba de leads</span><span>R$ 13,9 mil</span></div>
+          <div class="kpi-footer"><span>Apenas verba de conversão</span><span id="lead-spend">R$ 13,9 mil</span></div>
         </article>
         <article class="kpi-card reveal" data-delay="360">
           <div class="kpi-top"><span class="kpi-icon muted-icon">×</span><span class="data-gap">dado ausente</span></div>
@@ -218,6 +267,35 @@
           <span class="insight-index">03</span><div><p>Ponto de atenção</p><h3>Quiz consumiu verba sem resultado</h3><span>R$ 1.625,92 sem conversões atribuídas</span></div>
         </article>
       </div>
+
+      <article class="campaign-table-card reveal">
+        <div class="campaign-table-head">
+          <div>
+            <span class="table-kicker">DETALHAMENTO</span>
+            <h3>Resultados por campanha</h3>
+            <p>Os valores respondem aos filtros acima. Clique nos títulos para ordenar.</p>
+          </div>
+          <div class="table-summary"><strong id="table-total-spend">R$ 16.290,12</strong><span>investimento exibido</span></div>
+        </div>
+        <div class="table-scroll" role="region" aria-label="Tabela de campanhas" tabindex="0">
+          <table class="campaign-table">
+            <thead>
+              <tr>
+                <th><button data-sort="name">Campanha <span>↕</span></button></th>
+                <th>Status</th>
+                <th>Objetivo</th>
+                <th><button data-sort="spend">Investimento <span>↕</span></button></th>
+                <th><button data-sort="results">Resultados <span>↕</span></button></th>
+                <th><button data-sort="cpa">CPA <span>↕</span></button></th>
+                <th><button data-sort="ctr">CTR <span>↕</span></button></th>
+              </tr>
+            </thead>
+            <tbody id="campaign-table-body"></tbody>
+          </table>
+        </div>
+        <div id="table-empty" class="table-empty hidden">Nenhuma campanha corresponde aos filtros selecionados.</div>
+        <div class="table-footnote"><span>i</span><p>Resultados de “visita ao perfil” são mostrados na tabela, mas não entram no KPI de conversões. Isso evita misturar intenção com lead.</p></div>
+      </article>
     </section>
 
     <!-- Criativos -->
@@ -385,20 +463,63 @@
         </div>
 
         <aside class="forecast-card">
-          <div class="forecast-heading"><div><span>Simulador de cenário</span><h3>Planeje com premissas</h3></div><span class="simulation-badge">SIMULAÇÃO</span></div>
+          <div class="forecast-heading">
+            <div><span>Simulador de cenário</span><h3>Da verba ao faturamento potencial</h3><p>Use este bloco para responder “o que pode acontecer se investirmos X?”, antes de aprovar o plano.</p></div>
+            <span class="simulation-badge">SIMULAÇÃO</span>
+          </div>
+
+          <div class="simulator-howto">
+            <div><b>1</b><span><strong>Defina a mídia</strong>Quanto pretende investir.</span></div>
+            <div><b>2</b><span><strong>Informe a eficiência</strong>CPA e taxa de fechamento esperados.</span></div>
+            <div><b>3</b><span><strong>Leia o cenário</strong>Leads, vendas, receita e ROAS projetados.</span></div>
+          </div>
+
+          <div class="scenario-presets" role="group" aria-label="Cenários rápidos do simulador">
+            <span>Cenários rápidos</span>
+            <div>
+              <button class="scenario-button" data-scenario="conservative">Conservador</button>
+              <button class="scenario-button active" data-scenario="base">Base recomendado</button>
+              <button class="scenario-button" data-scenario="aggressive">Agressivo</button>
+            </div>
+          </div>
+
           <div class="forecast-fields">
-            <label><span>Orçamento planejado</span><div class="input-shell"><small>R$</small><input id="budget-input" type="number" min="1000" step="500" value="12000" /></div></label>
-            <label><span>CPA-alvo</span><div class="input-shell"><small>R$</small><input id="target-cpa-input" type="number" min="0.1" step="0.1" value="2" /></div></label>
-            <label><span>Conversão lead → venda</span><div class="input-shell"><input id="close-rate-input" type="number" min="0.1" max="100" step="0.1" value="3" /><small>%</small></div></label>
-            <label><span>Ticket médio</span><div class="input-shell"><small>R$</small><input id="ticket-input" type="number" min="1" step="10" value="297" /></div></label>
+            <label>
+              <span>Orçamento planejado <i title="Valor total reservado para mídia no período.">?</i></span>
+              <div class="input-shell"><small>R$</small><input id="budget-input" type="number" min="1000" step="500" value="12000" /></div>
+              <em>Valor total que será investido em anúncios.</em>
+            </label>
+            <label>
+              <span>CPA-alvo <i title="Custo máximo desejado para gerar um lead.">?</i></span>
+              <div class="input-shell"><small>R$</small><input id="target-cpa-input" type="number" min="0.1" step="0.1" value="2" /></div>
+              <em id="cpa-benchmark">Histórico observado: R$ 2,38.</em>
+            </label>
+            <label>
+              <span>Conversão lead → venda <i title="Percentual de leads que sua equipe transforma em clientes.">?</i></span>
+              <div class="input-shell"><input id="close-rate-input" type="number" min="0.1" max="100" step="0.1" value="3" /><small>%</small></div>
+              <em>Use a taxa real do comercial, se disponível.</em>
+            </label>
+            <label>
+              <span>Ticket médio <i title="Receita média gerada por cada venda.">?</i></span>
+              <div class="input-shell"><small>R$</small><input id="ticket-input" type="number" min="1" step="10" value="297" /></div>
+              <em>Receita média por novo cliente.</em>
+            </label>
           </div>
+
+          <div class="forecast-narrative" id="forecast-narrative">Com R$ 12.000 de mídia, o cenário base projeta aproximadamente 6.000 leads.</div>
+
           <div class="forecast-results">
-            <div><span>Leads projetados</span><strong id="forecast-leads">6.000</strong></div>
-            <div><span>Vendas projetadas</span><strong id="forecast-sales">180</strong></div>
-            <div class="revenue-result"><span>Faturamento potencial</span><strong id="forecast-revenue">R$ 53.460</strong></div>
-            <div><span>ROAS projetado</span><strong id="forecast-roas">4,46×</strong></div>
+            <div><span>Leads projetados</span><strong id="forecast-leads">6.000</strong><small>verba ÷ CPA</small></div>
+            <div><span>Vendas projetadas</span><strong id="forecast-sales">180</strong><small>leads × fechamento</small></div>
+            <div class="revenue-result"><span>Faturamento potencial</span><strong id="forecast-revenue">R$ 53.460</strong><small>vendas × ticket</small></div>
+            <div><span>ROAS projetado</span><strong id="forecast-roas">4,46×</strong><small>receita ÷ mídia</small></div>
           </div>
-          <p class="forecast-disclaimer">Projeção ilustrativa. Ajuste as premissas com dados reais de vendas antes de aprovar verba.</p>
+
+          <details class="formula-details">
+            <summary>Ver fórmulas utilizadas <span>+</span></summary>
+            <div><code>Leads = orçamento ÷ CPA</code><code>Vendas = leads × taxa de fechamento</code><code>Receita = vendas × ticket médio</code><code>ROAS = receita ÷ orçamento</code></div>
+          </details>
+          <p class="forecast-disclaimer"><strong>Importante:</strong> esta é uma projeção, não uma promessa de resultado. Para apresentar ao cliente, valide a taxa de fechamento e o ticket com o time comercial.</p>
         </aside>
       </div>
     </section>

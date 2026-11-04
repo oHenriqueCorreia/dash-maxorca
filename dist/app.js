@@ -15,6 +15,19 @@ const REPORT = {
   cpa: 2.3780635193
 };
 
+/* Campanhas agregadas exatamente como aparecem no CSV de campanhas. */
+const CAMPAIGNS = [
+  { id: 'es-leads-lp-0206', name: '[ES] - Leads p/LP - 02/06', status: 'inactive', objective: 'lead', results: 560, spend: 1263.77, impressions: 117917, clicks: 3590 },
+  { id: 'es-leads-lp-2406', name: '[ES] Leads LP - 24/06', status: 'inactive', objective: 'lead', results: 468, spend: 2917.23, impressions: 201424, clicks: 3654 },
+  { id: 'tf-ig', name: '01 - [TF] [IG]', status: 'inactive', objective: 'traffic', results: 7526, spend: 811.98, impressions: 94128, clicks: 6989 },
+  { id: 'lead-brforms', name: '02 - [LEAD] [BRFORMS]', status: 'inactive', objective: 'lead', results: 693, spend: 1450.07, impressions: 132860, clicks: 3836 },
+  { id: 'es-quiz-0109', name: '[ES] Leads Quiz - 01/09', status: 'inactive', objective: 'unattributed', results: 0, spend: 1625.92, impressions: 100453, clicks: 1697 },
+  { id: 'maxorca-lp-abo', name: '[MaxOrça] - Lead - LP nova - ABO', status: 'active', objective: 'lead', results: 2818, spend: 4723.55, impressions: 609284, clicks: 14134 },
+  { id: 'video-campeao-01', name: 'Camp Lead - LP - Video Campeao 01 - 13/10', status: 'inactive', objective: 'contact', results: 301, spend: 1294.22, impressions: 198349, clicks: 8027 },
+  { id: 'video-campeao-02', name: 'Camp Lead - LP - Video Campeao 02 - 13/10', status: 'inactive', objective: 'contact', results: 567, spend: 1294.75, impressions: 141607, clicks: 2447 },
+  { id: 'video-campeao-03', name: 'Camp Lead - LP - Video Campeao 03 - 13/10', status: 'inactive', objective: 'contact', results: 418, spend: 908.63, impressions: 108900, clicks: 1554 }
+];
+
 const CREATIVES = [
   { name: 'REVIEW — demonstração rápida e prova visual', leads: 515, spend: 771.85, cpa: 1.50, ctr: 1.83, format: 'Vídeo', label: 'PROVA VISUAL', accent: '#37d3ff', dark: '#132f46' },
   { name: 'RAFACAR PDF — urgência e transformação do papel', leads: 494, spend: 717.71, cpa: 1.45, ctr: 1.95, format: 'Reels', label: 'PAPEL → PDF', accent: '#9afc7c', dark: '#263b2c' },
@@ -29,21 +42,47 @@ const formatNumber = value => new Intl.NumberFormat('pt-BR', { maximumFractionDi
 const formatDecimal = (value, digits = 2) => new Intl.NumberFormat('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
 
 let activeDays = REPORT.days;
+let activeFilters = { campaign: 'all', objective: 'all', status: 'all' };
+let tableSort = { key: 'spend', direction: 'desc' };
 let trendChart;
 let channelChart;
 
+const objectiveLabels = {
+  lead: 'Geração de leads',
+  contact: 'Contato no site',
+  traffic: 'Visita ao perfil',
+  unattributed: 'Sem atribuição'
+};
+
+function getFilteredCampaigns() {
+  return CAMPAIGNS.filter(campaign => {
+    const campaignMatch = activeFilters.campaign === 'all' || campaign.id === activeFilters.campaign;
+    const objectiveMatch = activeFilters.objective === 'all' || campaign.objective === activeFilters.objective;
+    const statusMatch = activeFilters.status === 'all' || campaign.status === activeFilters.status;
+    return campaignMatch && objectiveMatch && statusMatch;
+  });
+}
+
 function currentMetrics() {
   const scale = activeDays / REPORT.days;
-  const exact = activeDays === REPORT.days;
+  const campaigns = getFilteredCampaigns();
+  const conversions = campaigns.filter(campaign => ['lead', 'contact'].includes(campaign.objective));
+  const spend = campaigns.reduce((sum, campaign) => sum + campaign.spend, 0) * scale;
+  const clicks = campaigns.reduce((sum, campaign) => sum + campaign.clicks, 0) * scale;
+  const impressions = campaigns.reduce((sum, campaign) => sum + campaign.impressions, 0) * scale;
+  const conversionCount = conversions.reduce((sum, campaign) => sum + campaign.results, 0) * scale;
+  const conversionSpend = conversions.reduce((sum, campaign) => sum + campaign.spend, 0) * scale;
   return {
-    spend: REPORT.spend * scale,
-    clicks: Math.round(REPORT.clicks * scale),
-    impressions: Math.round(REPORT.impressions * scale),
-    conversions: Math.round(REPORT.conversions * scale),
-    ctr: REPORT.ctr,
-    cpc: REPORT.cpc,
-    cpa: REPORT.cpa,
-    exact
+    spend,
+    clicks: Math.round(clicks),
+    impressions: Math.round(impressions),
+    conversions: Math.round(conversionCount),
+    conversionSpend,
+    ctr: impressions ? clicks / impressions * 100 : 0,
+    cpc: clicks ? spend / clicks : 0,
+    cpa: conversionCount ? conversionSpend / conversionCount : 0,
+    campaignCount: campaigns.length,
+    exact: activeDays === REPORT.days
   };
 }
 
@@ -70,11 +109,15 @@ function updateKPIs() {
     conversions: [metrics.conversions, value => formatNumber(value)],
     ctr: [metrics.ctr, value => `${formatDecimal(value)}%`],
     cpc: [metrics.cpc, value => formatBRL(value)],
-    cpa: [metrics.cpa, value => formatBRL(value)]
+    cpa: [metrics.cpa, value => metrics.conversions ? formatBRL(value) : '—']
   };
   Object.entries(values).forEach(([key, [value, formatter]]) => {
     document.querySelectorAll(`[data-kpi="${key}"]`).forEach(element => animateValue(element, value, formatter));
   });
+  document.getElementById('campaign-count').textContent = `${metrics.campaignCount} ${metrics.campaignCount === 1 ? 'campanha' : 'campanhas'}`;
+  document.getElementById('filter-result-count').textContent = `${metrics.campaignCount} ${metrics.campaignCount === 1 ? 'campanha' : 'campanhas'}`;
+  document.getElementById('lead-spend').textContent = formatBRL(metrics.conversionSpend);
+  document.getElementById('table-total-spend').textContent = formatBRL(metrics.spend);
 }
 
 function buildEstimatedSeries(days) {
@@ -156,6 +199,53 @@ function updateTrendChart() {
   trendChart.update();
 }
 
+function renderCampaignTable() {
+  const scale = activeDays / REPORT.days;
+  const campaigns = getFilteredCampaigns().map(campaign => {
+    const spend = campaign.spend * scale;
+    const results = campaign.results * scale;
+    return {
+      ...campaign,
+      spend,
+      results,
+      ctr: campaign.impressions ? campaign.clicks / campaign.impressions * 100 : 0,
+      cpa: campaign.results ? campaign.spend / campaign.results : null
+    };
+  });
+
+  campaigns.sort((a, b) => {
+    const left = a[tableSort.key];
+    const right = b[tableSort.key];
+    if (left === null && right === null) return 0;
+    if (left === null) return 1;
+    if (right === null) return -1;
+    const comparison = typeof left === 'string' ? left.localeCompare(right, 'pt-BR') : left - right;
+    return tableSort.direction === 'asc' ? comparison : -comparison;
+  });
+
+  const body = document.getElementById('campaign-table-body');
+  const empty = document.getElementById('table-empty');
+  empty.classList.toggle('hidden', campaigns.length > 0);
+  body.innerHTML = campaigns.map(campaign => {
+    const cpaClass = campaign.cpa === null ? '' : campaign.cpa <= REPORT.cpa ? 'cpa-good' : 'cpa-alert';
+    return `<tr>
+      <td>${campaign.name}</td>
+      <td><span class="table-status ${campaign.status}">${campaign.status === 'active' ? 'Ativa' : 'Inativa'}</span></td>
+      <td><span class="objective-chip">${objectiveLabels[campaign.objective]}</span></td>
+      <td>${formatBRL(campaign.spend)}</td>
+      <td>${campaign.objective === 'unattributed' ? '—' : formatNumber(campaign.results)}</td>
+      <td class="${cpaClass}">${campaign.cpa === null ? '—' : formatBRL(campaign.cpa)}</td>
+      <td>${formatDecimal(campaign.ctr)}%</td>
+    </tr>`;
+  }).join('');
+}
+
+function updateDashboard() {
+  updateKPIs();
+  renderCampaignTable();
+  if (trendChart) updateTrendChart();
+}
+
 function renderCreatives(sortBy = 'leads') {
   const list = [...CREATIVES].sort((a, b) => sortBy === 'cpa' ? a.cpa - b.cpa : b.leads - a.leads).slice(0, 4);
   document.getElementById('creative-grid').innerHTML = list.map((creative, index) => `
@@ -186,19 +276,24 @@ function configurePeriodControls() {
     caption.textContent = `${label} • ${exact ? 'dados observados' : 'estimativa proporcional'}`;
     chartLabel.textContent = label;
     sourceBadge.textContent = exact ? 'Fonte agregada • Meta Ads' : 'Estimativa • fonte agregada';
-    updateKPIs();
-    updateTrendChart();
+    updateDashboard();
+  }
+
+  function setDateInputs(start, end) {
+    document.getElementById('date-start').value = start;
+    document.getElementById('date-end').value = end;
   }
 
   document.querySelectorAll('.period-btn').forEach(button => button.addEventListener('click', () => {
     document.querySelectorAll('.period-btn').forEach(item => item.classList.remove('active'));
     button.classList.add('active');
     const period = button.dataset.period;
-    customPanel.classList.toggle('hidden', period !== 'custom');
-    if (period === '7') applyPeriod(7, '29 out — 04 nov 2026');
-    if (period === '30') applyPeriod(30, '06 out — 04 nov 2026');
-    if (period === 'month') applyPeriod(4, '01 — 04 nov 2026');
-    if (period === 'all') applyPeriod(REPORT.days, '01 ago — 04 nov 2026', true);
+    customPanel.classList.remove('hidden');
+    if (period === '7') { setDateInputs('2026-10-29', '2026-11-04'); applyPeriod(7, '29 out — 04 nov 2026'); }
+    if (period === '30') { setDateInputs('2026-10-06', '2026-11-04'); applyPeriod(30, '06 out — 04 nov 2026'); }
+    if (period === 'month') { setDateInputs('2026-11-01', '2026-11-04'); applyPeriod(4, '01 — 04 nov 2026'); }
+    if (period === 'all') { setDateInputs('2026-08-01', '2026-11-04'); applyPeriod(REPORT.days, '01 ago — 04 nov 2026', true); }
+    if (period === 'custom') document.getElementById('date-start').focus();
   }));
 
   document.getElementById('apply-custom').addEventListener('click', () => {
@@ -207,8 +302,44 @@ function configurePeriodControls() {
     if (end < start) return;
     const days = Math.round((end - start) / 86400000) + 1;
     const formatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+    document.querySelectorAll('.period-btn').forEach(item => item.classList.toggle('active', item.dataset.period === 'custom'));
     applyPeriod(days, `${formatter.format(start)} — ${formatter.format(end)}`, days === REPORT.days);
   });
+}
+
+function configureCampaignFilters() {
+  const campaignSelect = document.getElementById('campaign-filter');
+  const objectiveSelect = document.getElementById('objective-filter');
+  const statusSelect = document.getElementById('status-filter');
+
+  CAMPAIGNS.forEach(campaign => {
+    const option = document.createElement('option');
+    option.value = campaign.id;
+    option.textContent = campaign.name;
+    campaignSelect.appendChild(option);
+  });
+
+  const applyFilters = () => {
+    activeFilters = { campaign: campaignSelect.value, objective: objectiveSelect.value, status: statusSelect.value };
+    updateDashboard();
+  };
+
+  [campaignSelect, objectiveSelect, statusSelect].forEach(select => select.addEventListener('change', applyFilters));
+
+  document.getElementById('clear-filters').addEventListener('click', () => {
+    campaignSelect.value = 'all';
+    objectiveSelect.value = 'all';
+    statusSelect.value = 'all';
+    activeFilters = { campaign: 'all', objective: 'all', status: 'all' };
+    document.querySelector('.period-btn[data-period="all"]').click();
+  });
+
+  document.querySelectorAll('[data-sort]').forEach(button => button.addEventListener('click', () => {
+    const key = button.dataset.sort;
+    if (tableSort.key === key) tableSort.direction = tableSort.direction === 'asc' ? 'desc' : 'asc';
+    else tableSort = { key, direction: key === 'name' ? 'asc' : 'desc' };
+    renderCampaignTable();
+  }));
 }
 
 function configureInteractions() {
@@ -250,6 +381,11 @@ function configureInteractions() {
 
 function configureForecast() {
   const inputs = ['budget-input', 'target-cpa-input', 'close-rate-input', 'ticket-input'].map(id => document.getElementById(id));
+  const scenarios = {
+    conservative: [8000, 2.80, 2, 297],
+    base: [12000, 2.00, 3, 297],
+    aggressive: [20000, 1.80, 4, 297]
+  };
   const update = () => {
     const [budget, cpa, closeRate, ticket] = inputs.map(input => Math.max(0, Number(input.value) || 0));
     const leads = cpa ? budget / cpa : 0;
@@ -260,8 +396,19 @@ function configureForecast() {
     document.getElementById('forecast-sales').textContent = formatNumber(sales);
     document.getElementById('forecast-revenue').textContent = formatBRL(revenue);
     document.getElementById('forecast-roas').textContent = `${formatDecimal(roas)}×`;
+    document.getElementById('forecast-narrative').innerHTML = `Com <strong>${formatBRL(budget)}</strong> de mídia e CPA de <strong>${formatBRL(cpa)}</strong>, este cenário projeta cerca de <strong>${formatNumber(leads)} leads</strong>. Se ${formatDecimal(closeRate, 1)}% virarem clientes, o faturamento potencial será de <strong>${formatBRL(revenue)}</strong>.`;
+    const benchmark = document.getElementById('cpa-benchmark');
+    benchmark.textContent = cpa <= REPORT.cpa ? `Meta ${formatBRL(REPORT.cpa - cpa)} melhor que o histórico de ${formatBRL(REPORT.cpa)}.` : `Meta ${formatBRL(cpa - REPORT.cpa)} acima do histórico de ${formatBRL(REPORT.cpa)}.`;
+    benchmark.style.color = cpa <= REPORT.cpa ? '#2f8b69' : '#b06a5e';
   };
   inputs.forEach(input => input.addEventListener('input', update));
+
+  document.querySelectorAll('.scenario-button').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('.scenario-button').forEach(item => item.classList.remove('active'));
+    button.classList.add('active');
+    scenarios[button.dataset.scenario].forEach((value, index) => { inputs[index].value = value; });
+    update();
+  }));
   update();
 }
 
@@ -276,8 +423,9 @@ function configureReveal() {
 document.addEventListener('DOMContentLoaded', () => {
   renderCreatives();
   initCharts();
-  updateKPIs();
   configurePeriodControls();
+  configureCampaignFilters();
+  updateDashboard();
   configureInteractions();
   configureForecast();
   configureReveal();
