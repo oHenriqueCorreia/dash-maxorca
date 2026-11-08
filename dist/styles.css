@@ -73,7 +73,7 @@ button { -webkit-tap-highlight-color: transparent; }
 
 .kpi-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; }
 .kpi-card, .chart-card, .insight-card, .audience-card { border: 1px solid var(--line); background: linear-gradient(145deg,rgba(14,29,48,.92),rgba(9,20,34,.84)); box-shadow: 0 18px 45px rgba(0,0,0,.1); }
-.kpi-card { position: relative; overflow: hidden; min-height: 10.8rem; border-radius: 1rem; padding: 1rem; transition: transform .25s ease, border-color .25s ease, background .25s ease; }
+.kpi-card { position: relative; overflow: hidden; container-type: inline-size; min-height: 10.8rem; border-radius: 1rem; padding: 1rem; transition: transform .25s ease, border-color .25s ease, background .25s ease; }
 .kpi-card:hover { transform: translateY(-3px); border-color: rgba(55,211,255,.24); background: linear-gradient(145deg,rgba(18,37,60,.96),rgba(9,20,34,.92)); }
 .kpi-card.featured::after { content: ''; position: absolute; inset: auto -2rem -4rem auto; width: 8rem; height: 8rem; border-radius: 999px; background: rgba(154,252,124,.09); filter: blur(20px); }
 .kpi-top, .kpi-footer { display: flex; align-items: center; justify-content: space-between; gap: .7rem; }
@@ -82,7 +82,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .neutral-change, .data-gap { color: #5f6f83; font-size: .55rem; font-weight: 700; }
 .data-gap { border-radius: 999px; background: rgba(100,116,139,.1); padding: .25rem .45rem; }
 .kpi-label { margin-top: 1rem; color: #78879b; font-size: .66rem; font-weight: 700; }
-.kpi-value { margin-top: .2rem; color: #f8fafc; font-size: clamp(1.45rem,3vw,2.05rem); line-height: 1; font-weight: 800; letter-spacing: -.05em; }
+.kpi-value { margin-top: .2rem; color: #f8fafc; font-size: clamp(1.1rem,16cqi,2.05rem); line-height: 1; font-weight: 800; letter-spacing: -.05em; white-space: nowrap; }
 .kpi-footer { position: absolute; right: 1rem; bottom: 1rem; left: 1rem; border-top: 1px solid rgba(255,255,255,.05); padding-top: .7rem; color: #536277; font-size: .57rem; }
 
 .legend-note { display: none; align-items: center; gap: .5rem; color: #65758b; font-size: .65rem; }
@@ -230,3 +230,24 @@ button { -webkit-tap-highlight-color: transparent; }
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after { scroll-behavior: auto!important; animation-duration: .01ms!important; transition-duration: .01ms!important; }
 }
+.creative-sub{color:#94a3b8;font-size:11px;margin:7px 0 12px}
+.script-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.script-card,.optimization-grid article{background:#0d1b2d;border:1px solid rgba(148,163,184,.17);border-radius:18px;padding:21px;color:#e8f0fb}
+.script-head span,.optimization-grid article span{color:#37d3ff;font-size:10px;font-weight:800;letter-spacing:.14em}
+.script-head h3,.optimization-grid h3{font-size:18px;font-weight:800;margin:8px 0 5px}
+.script-head p,.script-core p,.optimization-grid p{color:#9aaabe;font-size:13px;line-height:1.6}
+.script-core{padding:14px;background:rgba(55,211,255,.06);border-radius:12px;margin:18px 0}
+.script-core strong{font-size:11px;text-transform:uppercase;color:#9afc7c;letter-spacing:.1em}
+.script-variants{display:grid;gap:10px}
+.script-variant{display:flex;gap:12px;border-top:1px solid rgba(148,163,184,.12);padding-top:11px}
+.script-variant>b{color:#37d3ff;font-size:12px}
+.script-variant p{font-size:12px;line-height:1.55;color:#b7c5d6;margin:0 0 5px}
+.script-variant strong{color:#fff}
+.optimization-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+@media(max-width:420px){.script-grid{grid-template-columns:1fr}.script-card{padding:16px}}
+.outcome-breakdown{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+.outcome-breakdown>div{border:1px solid rgba(148,163,184,.16);border-radius:12px;background:#0d1b2d;padding:15px}
+.outcome-breakdown span{display:block;color:#9aaabe;font-size:11px;line-height:1.4}
+.outcome-breakdown strong{display:block;color:#f3f7ff;font-size:20px;margin-top:5px}
+@media(max-width:800px){.outcome-breakdown{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.outcome-breakdown{grid-template-columns:1fr}}
